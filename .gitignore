@@ -1,5 +1,14 @@
 [Bb]in/
 [Oo]bj/
+[Ll]og/
+bld/
+x86/
+x64/
+[Rr]elease/
+[Dd]ebug/
+
+
+*.rsuser
 *.user
 *.suo
 *.userosscache
