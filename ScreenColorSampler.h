@@ -8,9 +8,12 @@
 class ScreenColorSampler
 {
 public:
-	void GetDesktopResolution(int&,int&);
-	void GetColors(std::vector<Color>&, std::vector<Color>&, std::vector<Color>&, std::vector<Color>&);
+	ScreenColorSampler();
+	~ScreenColorSampler();
 
+	void GetDesktopResolution(int&,int&);
+	void GetColors(std::vector<Color>&, std::vector<Color>&, std::vector<Color>&, std::vector<Color>&, int, int);
+	
 private:
 	int screenWidth, screenHeight;
 	HDC screenDC;
