@@ -17,6 +17,10 @@ private:
 
 	wxSpinCtrl* spin_ctrl_width;
 	wxSpinCtrl* spin_ctrl_height;
+
+	wxRadioBox* mode_radio_box;
+	wxRadioBox* color_radio_box;
+
 	std::vector <wxPanel*> leds_on_width;
 	std::vector <wxPanel*> leds_on_height;
 };

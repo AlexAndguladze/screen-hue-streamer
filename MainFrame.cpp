@@ -31,6 +31,18 @@ MainFrame::MainFrame(const wxString& title) : wxFrame(nullptr, wxID_ANY, title) 
 	spin_ctrl_height = new wxSpinCtrl(side_panel, wxID_ANY, "", wxPoint(10, 100), wxSize(130, -1), 16384L, 5, 100);
 	spin_ctrl_height->Bind(wxEVT_SPINCTRL, &MainFrame::OnLedsCtrlChange, this);
 	spin_ctrl_height->Bind(wxEVT_TEXT, &MainFrame::OnLedsTextChange, this);
+
+	wxArrayString mode_choices;
+	mode_choices.Add("Screen");
+	mode_choices.Add("Cursor");
+
+	wxArrayString color_choices;
+	color_choices.Add("RGB");
+	color_choices.Add("White");
+
+	mode_radio_box = new wxRadioBox(side_panel, wxID_ANY, "Mode", wxPoint(10, 150), wxDefaultSize, mode_choices);
+	color_radio_box = new wxRadioBox(side_panel, wxID_ANY, "Color", wxPoint(10, 210), wxDefaultSize, color_choices);
+
 	wxButton* btn_apply = new wxButton(side_bottom_panel, wxID_ANY, "APPLY", wxPoint(47, 25), wxSize(100, 30));
 
 
