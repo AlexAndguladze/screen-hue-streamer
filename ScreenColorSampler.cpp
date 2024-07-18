@@ -20,7 +20,7 @@ ScreenColorSampler::~ScreenColorSampler() {
 	DeleteDC(memoryDC);
 	ReleaseDC(NULL, screenDC);
 }
-void ScreenColorSampler::GetColors(std::vector<Color>& colorsTop, std::vector<Color>& colorsBottom, std::vector<Color>& colorsLeft, std::vector<Color>& colorsRight, int columnWidth, int rowSize) {
+void ScreenColorSampler::GetColors(std::list<Color>& colorsTop, std::list<Color>& colorsBottom, std::list<Color>& colorsLeft, std::list<Color>& colorsRight, int columnWidth, int rowSize) {
 	bi.biSize = sizeof(BITMAPINFOHEADER);
 	bi.biWidth = screenWidth;
 	bi.biHeight = screenHeight;
@@ -35,14 +35,25 @@ void ScreenColorSampler::GetColors(std::vector<Color>& colorsTop, std::vector<Co
 	BitBlt(memoryDC, 0, 0, screenWidth, screenHeight, screenDC, 0, 0, SRCCOPY);
 
 
+	long long Rsum = 0;
+	long long Gsum = 0;
+	long long Bsum = 0;
 
 	for (int y = 0; y < screenHeight/2; y++)
 	{
 		for (int x = 0; x < columnWidth; x++)
 		{
-			//BYTE* pixel = pPixels + y * columnWidth * 3 + x * 3;
-
+			BYTE* pixel = pPixels + y * screenWidth * 3 + x * 3;
+			Rsum += pixel[2];
+			Gsum += pixel[1];
+			Bsum += pixel[0];
 		}
 	}
+	int red = Rsum / (columnWidth * screenHeight / 2);
+	int green = Rsum / (columnWidth * screenHeight / 2);
+	int blue = Rsum / (columnWidth * screenHeight / 2);
+
+	Color color = Color(red, green, blue);
+	colorsTop.push_back(color);
 
 }

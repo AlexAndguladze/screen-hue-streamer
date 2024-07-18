@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <vector>
 #include "Color.h"
+#include <list>
 
 class ScreenColorSampler
 {
@@ -12,7 +13,7 @@ public:
 	~ScreenColorSampler();
 
 	void GetDesktopResolution(int&,int&);
-	void GetColors(std::vector<Color>&, std::vector<Color>&, std::vector<Color>&, std::vector<Color>&, int, int);
+	void GetColors(std::list<Color>&, std::list<Color>&, std::list<Color>&, std::list<Color>&, int, int);
 	
 private:
 	int screenWidth, screenHeight;
