@@ -2,6 +2,7 @@
 #include <wx/wx.h>
 #include <wx/spinctrl.h>
 
+
 MainFrame::MainFrame(const wxString& title) : wxFrame(nullptr, wxID_ANY, title) {
 
 	wxPanel* side_panel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxSize(200, 300));
@@ -43,26 +44,52 @@ MainFrame::MainFrame(const wxString& title) : wxFrame(nullptr, wxID_ANY, title) 
 	mode_radio_box = new wxRadioBox(side_panel, wxID_ANY, "Mode", wxPoint(10, 150), wxDefaultSize, mode_choices);
 	color_radio_box = new wxRadioBox(side_panel, wxID_ANY, "Color", wxPoint(10, 210), wxDefaultSize, color_choices);
 
-	wxButton* btn_apply = new wxButton(side_bottom_panel, wxID_ANY, "APPLY", wxPoint(47, 25), wxSize(100, 30));
+	wxButton* btn_apply = new wxButton(side_bottom_panel, wxID_ANY, "APPLY", wxPoint(5, 25), wxSize(100, 30));
+	wxButton* btn_run = new wxButton(side_bottom_panel, wxID_ANY, "RUN", wxPoint(120, 25), wxSize(50, 30));
 
+	btn_run->Bind(wxEVT_BUTTON, &MainFrame::DrawTop, this);
 
+	screen_color_sampler = ScreenColorSampler();
 
 	//draw leds initially
-	int led_width_count = spin_ctrl_width->GetValue();
-	int led_height_count = spin_ctrl_height->GetValue();
+	led_width_count = spin_ctrl_width->GetValue();
+	led_height_count = spin_ctrl_height->GetValue();
 	DrawLeds(led_width_count, led_height_count);
+
 }
 
 void MainFrame::OnLedsTextChange(wxCommandEvent& event) {
-	int led_width_count = spin_ctrl_width->GetValue();
-	int led_height_count = spin_ctrl_height->GetValue();
+	led_width_count = spin_ctrl_width->GetValue();
+	led_height_count = spin_ctrl_height->GetValue();
 	DrawLeds(led_width_count, led_height_count);
 }
 
 void MainFrame::OnLedsCtrlChange(wxSpinEvent& event) {
-	int led_width_count = spin_ctrl_width->GetValue();
-	int led_height_count = spin_ctrl_height->GetValue();
+	led_width_count = spin_ctrl_width->GetValue();
+	led_height_count = spin_ctrl_height->GetValue();
 	DrawLeds(led_width_count, led_height_count);
+}
+
+void MainFrame::DrawTop(wxCommandEvent& event) {
+
+	std::vector<Color> colors_on_width = std::vector<Color>(0);
+	std::vector<Color> left = std::vector<Color>(0);
+	std::vector<Color> right = std::vector<Color>(0);
+	std::vector<Color> bottom = std::vector<Color>(0);
+
+	screen_color_sampler.GetColors(colors_on_width, bottom, left, right, led_width_count, led_height_count);
+
+	for (size_t i = 0; i < leds_on_width.size(); ++i)
+	{
+		if (leds_on_width[i])
+		{
+			Color color = colors_on_width[i];
+			leds_on_width[i]->SetBackgroundColour(wxColour(color.R, color.G, color.B));
+		}
+	}
+
+	led_display_panel->Layout();
+	led_display_panel->Refresh();
 }
 
 void MainFrame::DrawLeds(int width_count, int height_count) {

@@ -8,5 +8,4 @@
     uint8_t B;
 
     Color(uint8_t r = 0, uint8_t g = 0, uint8_t b = 0) : R(r), G(g), B(b) {}
-    Color() : R(0), G(0), B(0){}
 };
