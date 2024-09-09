@@ -13,7 +13,7 @@ public:
 	~ScreenColorSampler();
 
 	void GetDesktopResolution(int&,int&);
-	void GetColors(std::vector<Color>& width, std::vector<Color>& bottom, std::vector<Color>& left, std::vector<Color>& right, int column_count, int row_count);
+	void GetColors(std::vector<Color>& width, std::vector<Color>& height, int column_count, int row_count);
 	
 private:
 	int screenWidth, screenHeight;

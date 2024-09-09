@@ -73,11 +73,9 @@ void MainFrame::OnLedsCtrlChange(wxSpinEvent& event) {
 void MainFrame::DrawTop(wxCommandEvent& event) {
 
 	std::vector<Color> colors_on_width = std::vector<Color>(0);
-	std::vector<Color> left = std::vector<Color>(0);
-	std::vector<Color> right = std::vector<Color>(0);
-	std::vector<Color> bottom = std::vector<Color>(0);
+	std::vector<Color> colors_on_height = std::vector<Color>(0);
 
-	screen_color_sampler.GetColors(colors_on_width, bottom, left, right, led_width_count, led_height_count);
+	screen_color_sampler.GetColors(colors_on_width, colors_on_height, led_width_count, led_height_count);
 
 	for (size_t i = 0; i < leds_on_width.size(); ++i)
 	{
@@ -85,6 +83,12 @@ void MainFrame::DrawTop(wxCommandEvent& event) {
 		{
 			Color color = colors_on_width[i];
 			leds_on_width[i]->SetBackgroundColour(wxColour(color.R, color.G, color.B));
+		}
+	}
+	for (size_t i = 0; i < leds_on_height.size()/2; i++) {
+		if (leds_on_height[i]) {
+			Color color = colors_on_height[i];
+			leds_on_height[i]->SetBackgroundColour(wxColour(color.R, color.G, color.B));
 		}
 	}
 

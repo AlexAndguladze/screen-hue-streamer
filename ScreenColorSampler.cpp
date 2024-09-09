@@ -15,7 +15,7 @@ ScreenColorSampler::~ScreenColorSampler() {
 	DeleteObject(hBitmap);
 
 }
-void ScreenColorSampler::GetColors(std::vector<Color>& colors_width, std::vector<Color>& colors_bottom, std::vector<Color>& colors_left, std::vector<Color>& colors_right, int column_count, int row_count) {
+void ScreenColorSampler::GetColors(std::vector<Color>& colors_width, std::vector<Color>& colors_height, int column_count, int row_count) {
 	bi.biSize = sizeof(BITMAPINFOHEADER);
 	bi.biWidth = screenWidth;
 	bi.biHeight = -screenHeight;
@@ -46,7 +46,7 @@ void ScreenColorSampler::GetColors(std::vector<Color>& colors_width, std::vector
 
 	int column_width = screenWidth / column_count;
 	int column_remainder = screenWidth % column_count;
-	int screen_height_divider = 8;//to calculate average color of only top n-th pixels of full height
+	int screen_height_divider = 3;//to calculate average color of only top n-th pixels of full height
 	
 
 	//calculate top led colors
@@ -105,19 +105,40 @@ void ScreenColorSampler::GetColors(std::vector<Color>& colors_width, std::vector
  		colors_width.push_back(color);
 	}
 
-	int height_width = screenHeight / row_count;
+	int row_height = screenHeight / row_count;
 	int row_reminder = screenHeight % row_count;
+	int screen_width_divider = 15;
 
 	//calculate left side led colors
 	for (int k = 0; k < row_count; k++)
 	{
+		unsigned long Rsum = 0;
+		unsigned long Gsum = 0;
+		unsigned long Bsum = 0;
+		
+		int led_offset = k * row_height * screenWidth * 3;//makes it go to next led area
 
+		if (k + 1 == row_count) {
+			row_height += row_reminder;
+		}
+		for (int y = 0; y < row_height; y++)
+		{
+			for (int x = 0; x < screenWidth / screen_width_divider; x++)
+			{
+				BYTE* pixel = pPixels + y * screenWidth * 3 + x * 3 + led_offset;
+				Rsum += pixel[2];
+				Gsum += pixel[1];
+				Bsum += pixel[0];
+			}
+		}
+		int red = (Rsum / (row_height * screenWidth / screen_width_divider));
+		int green = (Gsum / (row_height * screenWidth / screen_width_divider));
+		int blue = (Bsum / (row_height * screenWidth / screen_width_divider));
+
+		Color color = Color(red, green, blue);
+		colors_height.push_back(color);
 	}
-
-
 
 	DeleteDC(memoryDC);
 	ReleaseDC(NULL, screenDC);
-
-	
 }
