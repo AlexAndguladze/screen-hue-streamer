@@ -139,6 +139,36 @@ void ScreenColorSampler::GetColors(std::vector<Color>& colors_width, std::vector
 		colors_height.push_back(color);
 	}
 
+	row_height = screenHeight / row_count;
+
+	//calculate right side led colors
+	for (int k = 0; k < row_count; k++) {
+		unsigned long Rsum = 0;
+		unsigned long Gsum = 0;
+		unsigned long Bsum = 0;
+
+		int led_offset = k * row_height * screenWidth * 3;
+		int width_offset = (screenWidth - (screenWidth / screen_width_divider)) * 3;
+		if (k + 1 == row_count) {
+			row_height += row_reminder;
+		}
+		for (int y = 0; y < row_height; y++)
+		{
+			for (int x = 0; x < screenWidth / screen_width_divider; x++)
+			{
+				BYTE* pixel = pPixels + width_offset + y * screenWidth * 3 + x * 3 + led_offset;
+				Rsum += pixel[2];
+				Gsum += pixel[1];
+				Bsum += pixel[0];
+			}
+		}
+		int red = (Rsum / (row_height * screenWidth / screen_width_divider));
+		int green = (Gsum / (row_height * screenWidth / screen_width_divider));
+		int blue = (Bsum / (row_height * screenWidth / screen_width_divider));
+		Color color = Color(red, green, blue);
+		colors_height.push_back(color);
+	}
+
 	DeleteDC(memoryDC);
 	ReleaseDC(NULL, screenDC);
 }

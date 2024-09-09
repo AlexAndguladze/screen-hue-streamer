@@ -85,7 +85,7 @@ void MainFrame::DrawTop(wxCommandEvent& event) {
 			leds_on_width[i]->SetBackgroundColour(wxColour(color.R, color.G, color.B));
 		}
 	}
-	for (size_t i = 0; i < leds_on_height.size()/2; i++) {
+	for (size_t i = 0; i < leds_on_height.size(); i++) {
 		if (leds_on_height[i]) {
 			Color color = colors_on_height[i];
 			leds_on_height[i]->SetBackgroundColour(wxColour(color.R, color.G, color.B));
