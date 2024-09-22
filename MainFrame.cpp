@@ -2,8 +2,13 @@
 #include <wx/wx.h>
 #include <wx/spinctrl.h>
 
+const int EVT_THREAD_UPDATE = wxNewId();
 
 MainFrame::MainFrame(const wxString& title) : wxFrame(nullptr, wxID_ANY, title) {
+
+	timer = new wxTimer(this, ID_TIMER);
+	isRunning = false;
+	Bind(wxEVT_THREAD, &MainFrame::OnThreadUpdate, this, EVT_THREAD_UPDATE);
 
 	wxPanel* side_panel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxSize(200, 300));
 	side_panel->SetBackgroundColour(wxColour(100, 100, 200));
@@ -47,7 +52,7 @@ MainFrame::MainFrame(const wxString& title) : wxFrame(nullptr, wxID_ANY, title) 
 	wxButton* btn_apply = new wxButton(side_bottom_panel, wxID_ANY, "APPLY", wxPoint(5, 25), wxSize(100, 30));
 	wxButton* btn_run = new wxButton(side_bottom_panel, wxID_ANY, "RUN", wxPoint(120, 25), wxSize(50, 30));
 
-	btn_run->Bind(wxEVT_BUTTON, &MainFrame::DrawTop, this);
+	btn_run->Bind(wxEVT_BUTTON, &MainFrame::OnRunButton, this);
 
 	screen_color_sampler = ScreenColorSampler();
 
@@ -70,12 +75,7 @@ void MainFrame::OnLedsCtrlChange(wxSpinEvent& event) {
 	DrawLeds(led_width_count, led_height_count);
 }
 
-void MainFrame::DrawTop(wxCommandEvent& event) {
-
-	std::vector<Color> colors_on_width = std::vector<Color>(0);
-	std::vector<Color> colors_on_height = std::vector<Color>(0);
-
-	screen_color_sampler.GetColors(colors_on_width, colors_on_height, led_width_count, led_height_count);
+void MainFrame::SetLedColors() {
 
 	for (size_t i = 0; i < leds_on_width.size(); ++i)
 	{
@@ -133,4 +133,59 @@ void MainFrame::DrawLeds(int width_count, int height_count) {
 
 	led_display_panel->Layout();
 	led_display_panel->Refresh();
+}
+
+void MainFrame::OnRunButton(wxCommandEvent& event) {
+	if (!isRunning) {
+		isRunning = true;
+		timer->Start(84);
+		workerThread = std::thread(&MainFrame::WorkerFunction, this);
+	}
+	else {
+		isRunning = false;
+		timer->Stop();
+		if (workerThread.joinable()) {
+			workerThread.join();
+		}
+	}
+}
+void MainFrame::OnTimer(wxTimerEvent& event) {
+	SetLedColors();
+}
+
+void MainFrame::WorkerFunction() {
+	while (isRunning) {
+		ColorData colorData;
+		std::vector<Color> colors_on_width = std::vector<Color>(0);
+		std::vector<Color> colors_on_height = std::vector<Color>(0);
+
+		screen_color_sampler.GetColors(colors_on_width, colors_on_height, led_width_count, led_height_count);
+		
+		colorData.colors_on_height = colors_on_height;
+		colorData.colors_on_width = colors_on_width;
+
+		wxThreadEvent* evt = new wxThreadEvent(wxEVT_THREAD, EVT_THREAD_UPDATE);
+		evt->SetPayload(colorData);
+
+		wxQueueEvent(this, evt);
+
+		std::this_thread::sleep_for(std::chrono::milliseconds(84));
+	}
+	
+}
+void MainFrame::OnThreadUpdate(wxThreadEvent& event) {
+	ColorData colorData = event.GetPayload<ColorData>();
+
+	colors_on_width = colorData.colors_on_width;
+	colors_on_height = colorData.colors_on_height;
+
+	SetLedColors();
+}
+
+MainFrame::~MainFrame() {
+	if (workerThread.joinable()) {
+		isRunning = false;
+		workerThread.join();
+	}
+	delete timer;
 }

@@ -137,12 +137,14 @@
   <ItemGroup>
     <ClInclude Include="App.h" />
     <ClInclude Include="Color.h" />
+    <ClInclude Include="ColorData.h" />
     <ClInclude Include="MainFrame.h" />
     <ClInclude Include="ScreenColorSampler.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp" />
     <ClCompile Include="Color.cpp" />
+    <ClCompile Include="ColorData.cpp" />
     <ClCompile Include="MainFrame.cpp" />
     <ClCompile Include="ScreenColorSampler.cpp" />
   </ItemGroup>
